@@ -1,10 +1,21 @@
-'use client';
 
+import { Suspense } from 'react';
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-20 text-white">Đang tải trang tìm kiếm...</div>}>
+      <SearchPageContent />
+    </Suspense>
+  );
+}
+
+// Moved all client logic to a child component
+"use client";
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Search, Calendar, MapPin, Filter, X } from 'lucide-react';
+import { Search, Calendar, MapPin, Filter } from 'lucide-react';
 import { GlassCard, Scene3D, FloatingCard } from '@/components/3d/Scene';
 import { eventsApi } from '@/lib/api';
 
@@ -21,7 +32,7 @@ interface Event {
   viewCount: number;
 }
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +47,7 @@ export default function SearchPage() {
 
   useEffect(() => {
     loadEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
   const loadEvents = async () => {
@@ -66,10 +78,8 @@ export default function SearchPage() {
   return (
     <div className="relative min-h-screen">
       <Scene3D />
-      
       <div className="relative z-10 pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-20">
         <h1 className="text-4xl font-bold text-white mb-8">Tìm kiếm sự kiện</h1>
-
         {/* Search Bar */}
         <GlassCard className="p-6 mb-8">
           <form onSubmit={handleSearch} className="flex gap-4">
@@ -99,7 +109,6 @@ export default function SearchPage() {
             </button>
           </form>
         </GlassCard>
-
         {/* Filters Panel */}
         {showFilters && (
           <motion.div
@@ -117,7 +126,6 @@ export default function SearchPage() {
                   Xóa bộ lọc
                 </button>
               </div>
-              
               <div className="grid md:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-gray-300 text-sm mb-2">Danh mục</label>
@@ -134,7 +142,6 @@ export default function SearchPage() {
                     <option value="Lễ hội">Lễ hội</option>
                   </select>
                 </div>
-
                 <div>
                   <label className="block text-gray-300 text-sm mb-2">Tỉnh/Thành phố</label>
                   <select
@@ -148,7 +155,6 @@ export default function SearchPage() {
                     <option value="Đà Nẵng">Đà Nẵng</option>
                   </select>
                 </div>
-
                 <div>
                   <label className="block text-gray-300 text-sm mb-2">Từ ngày</label>
                   <input
@@ -158,7 +164,6 @@ export default function SearchPage() {
                     className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
-
                 <div>
                   <label className="block text-gray-300 text-sm mb-2">Đến ngày</label>
                   <input
@@ -172,7 +177,6 @@ export default function SearchPage() {
             </GlassCard>
           </motion.div>
         )}
-
         {/* Results */}
         <div className="mb-6">
           <p className="text-gray-300">
@@ -180,7 +184,6 @@ export default function SearchPage() {
             {searchQuery && ` cho "${searchQuery}"`}
           </p>
         </div>
-
         {loading ? (
           <div className="text-center py-20">
             <div className="inline-block w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
